@@ -1,20 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useTRPC } from "../../utils/trpc";
 
-import "../../App.css";
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export const Route = createFileRoute("/_private/")({
   component: App,
   loader: async ({ context: { trpc, queryClient } }) => {
-    console.log("Ensuring query data for getAccounts");
+    await sleep(1500);
     await queryClient.ensureQueryData(trpc.getAccounts.queryOptions());
   },
 });
 
 function App() {
   const trpc = useTRPC();
-  const accounts = useQuery(trpc.getAccounts.queryOptions());
+  const accounts = useSuspenseQuery(trpc.getAccounts.queryOptions());
 
   return (
     <div className="App">

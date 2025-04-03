@@ -6,19 +6,6 @@ import { queryClient } from "../utils/trpc";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RouteComponent,
-  pendingComponent: () => (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        fontSize: "2rem",
-      }}
-    >
-      Loading...
-    </div>
-  ),
 });
 
 function RouteComponent() {
