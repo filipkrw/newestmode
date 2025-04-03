@@ -1,5 +1,6 @@
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
+import { AccountRepository } from "./db/repos/account";
 
 type User = {
   id: string;
@@ -18,6 +19,7 @@ export const appRouter = t.router({
   getUsers: t.procedure.query(() => {
     return Object.values(users);
   }),
+  getAccounts: t.procedure.query(AccountRepository.getAccounts),
   createUser: t.procedure
     .input(
       z.object({
