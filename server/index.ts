@@ -5,9 +5,14 @@ import {
 import fastify from "fastify";
 import { createContext } from "./context";
 import { appRouter, type AppRouter } from "./router";
+import cors from "@fastify/cors";
 
 const server = fastify({
   maxParamLength: 5000,
+});
+
+server.register(cors, {
+  origin: "*",
 });
 
 server.register(fastifyTRPCPlugin, {
@@ -16,7 +21,6 @@ server.register(fastifyTRPCPlugin, {
     router: appRouter,
     createContext,
     onError({ path, error }) {
-      // report to error monitoring
       console.error(`Error in tRPC handler on path '${path}':`, error);
     },
   } satisfies FastifyTRPCPluginOptions<AppRouter>["trpcOptions"],

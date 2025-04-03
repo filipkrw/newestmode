@@ -1,36 +1,49 @@
-import { createFileRoute } from '@tanstack/react-router'
-import logo from '../logo.svg'
-import '../App.css'
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import "../App.css";
+import { useTRPC } from "../utils/trpc";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: App,
-})
+  loader: async ({ context: { trpc, queryClient } }) => {
+    await queryClient.ensureQueryData(trpc.getUsers.queryOptions());
+    return;
+  },
+  pendingComponent: () => <div>Loading...</div>,
+});
 
 function App() {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  const users = useQuery(trpc.getUsers.queryOptions());
+  const createUser = useMutation(trpc.createUser.mutationOptions());
+
+  function invalidateUsers() {
+    return queryClient.invalidateQueries({
+      queryKey: trpc.getUsers.queryKey(),
+    });
+  }
+
+  function appendUser(user: { id: string; name: string }) {
+    queryClient.setQueryData(trpc.getUsers.queryKey(), (oldData) => {
+      return [...(oldData ?? []), user];
+    });
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/routes/index.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <a
-          className="App-link"
-          href="https://tanstack.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn TanStack
-        </a>
-      </header>
+      <pre className="text-xs">{JSON.stringify(users?.data, null, 2)}</pre>
+      <button
+        onClick={() =>
+          createUser.mutate(
+            { name: "Filip" },
+            { onSuccess: (user) => appendUser(user) }
+          )
+        }
+      >
+        Add user
+      </button>
     </div>
-  )
+  );
 }

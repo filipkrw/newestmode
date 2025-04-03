@@ -15,6 +15,9 @@ export const appRouter = t.router({
   getUserById: t.procedure.input(z.string()).query((opts) => {
     return users[opts.input]; // input type is string
   }),
+  getUsers: t.procedure.query(() => {
+    return Object.values(users);
+  }),
   createUser: t.procedure
     .input(
       z.object({
@@ -26,6 +29,7 @@ export const appRouter = t.router({
       const id = Date.now().toString();
       const user: User = { id, ...opts.input };
       users[user.id] = user;
+      console.log(`Created user: ${user.name} (${user.id})`);
       return user;
     }),
 });
