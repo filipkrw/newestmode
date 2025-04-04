@@ -1,3 +1,4 @@
+import cors from "@fastify/cors";
 import {
   fastifyTRPCPlugin,
   type FastifyTRPCPluginOptions,
@@ -5,9 +6,6 @@ import {
 import fastify from "fastify";
 import { createContext } from "./context";
 import { appRouter, type AppRouter } from "./router";
-import cors from "@fastify/cors";
-import { db } from "./db/drizzle";
-import { AccountSchema } from "./db/schema";
 
 const server = fastify({
   maxParamLength: 5000,
